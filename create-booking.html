@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Booking - Boutique Hotel Management</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+
+<body>
+    <div id="layout-container"></div>
+
+    <main class="container" style="padding-top: 2rem; padding-bottom: 2rem; max-width: 1024px;">
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold" id="page-title"
+                style="font-size: 1.875rem; font-weight: 700; color: var(--text-dark);">New Booking Reservation</h1>
+            <p style="color: var(--text-light); margin-top: 0.5rem;">Enter guest details and room preferences to create
+                a new stay record.</p>
+        </div>
+
+        <form id="booking-form" onsubmit="handleFormSubmit(event)">
+            <div class="grid gap-6">
+                <!-- Guest Info -->
+                <div class="bg-white rounded-xl shadow-sm"
+                    style="border: 1px solid var(--border-color); overflow: hidden;">
+                    <div
+                        style="border-bottom: 1px solid var(--border-color); padding: 1rem 1.5rem; background-color: #f9fafb;">
+                        <h2
+                            style="font-size: 0.875rem; font-weight: 600; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.05em;">
+                            👤 Guest Information
+                        </h2>
+                    </div>
+                    <div class="p-6 grid md-grid-cols-2 gap-6">
+                        <div class="form-group">
+                            <label class="label">Client Full Name</label>
+                            <input type="text" name="fullName" class="input" placeholder="e.g. Jonathan Doe" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="label">Age</label>
+                            <input type="number" name="age" class="input" placeholder="25" required>
+                        </div>
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label class="label">Identification (ID / Passport)</label>
+                            <input type="text" name="idNumber" class="input" placeholder="Enter ID number" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stay Details -->
+                <div class="bg-white rounded-xl shadow-sm"
+                    style="border: 1px solid var(--border-color); overflow: hidden;">
+                    <div
+                        style="border-bottom: 1px solid var(--border-color); padding: 1rem 1.5rem; background-color: #f9fafb;">
+                        <h2
+                            style="font-size: 0.875rem; font-weight: 600; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.05em;">
+                            🛏️ Stay Details
+                        </h2>
+                    </div>
+                    <div class="p-6">
+                        <div class="grid md-grid-cols-3 gap-6" style="margin-bottom: 1.5rem;">
+                            <div class="form-group">
+                                <label class="label">Room Type</label>
+                                <select name="roomType" class="select">
+                                    <option value="Normal">Ordinary Room</option>
+                                    <option value="Semi Luxury">Semi Luxury</option>
+                                    <option value="Luxury">Luxury</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="label">People</label>
+                                <input type="number" name="peopleCount" class="input" value="1" min="1" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="label">Duration (Days)</label>
+                                <input type="number" name="duration" class="input" value="1" min="1" required>
+                            </div>
+                        </div>
+
+                        <div class="grid md-grid-cols-2 gap-6">
+                            <div class="form-group">
+                                <label class="label">Bed Type Configuration</label>
+                                <div class="flex" style="gap: 0.75rem;">
+                                    <button type="button" class="btn btn-secondary select-btn"
+                                        onclick="selectOption('bedType', 'Single')" data-group="bedType"
+                                        data-value="Single" style="flex: 1;">Single</button>
+                                    <button type="button" class="btn btn-secondary select-btn"
+                                        onclick="selectOption('bedType', 'Double')" data-group="bedType"
+                                        data-value="Double" style="flex: 1;">Double</button>
+                                    <button type="button" class="btn btn-secondary select-btn"
+                                        onclick="selectOption('bedType', 'King')" data-group="bedType" data-value="King"
+                                        style="flex: 1;">King</button>
+                                </div>
+                                <input type="hidden" name="bedType" value="Single">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="label">Breakfast Plan</label>
+                                <div class="flex" style="gap: 0.75rem;">
+                                    <button type="button" class="btn btn-secondary select-btn"
+                                        onclick="selectOption('breakfast', 'Include')" data-group="breakfast"
+                                        data-value="Include" style="flex: 1;">Include</button>
+                                    <button type="button" class="btn btn-secondary select-btn"
+                                        onclick="selectOption('breakfast', 'Exclude')" data-group="breakfast"
+                                        data-value="Exclude" style="flex: 1;">Exclude</button>
+                                </div>
+                                <input type="hidden" name="breakfast" value="Include">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="flex justify-between items-center"
+                    style="padding-top: 1rem; border-top: 1px solid var(--border-color); justify-content: flex-end; gap: 1rem;">
+                    <a href="home.html" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Save Reservation ✓</button>
+                </div>
+            </div>
+        </form>
+    </main>
+
+    <script src="assets/js/main.js"></script>
+    <script>
+        // Form selection logic
+        function selectOption(group, value) {
+            // Update hidden input
+            document.querySelector(`input[name="${group}"]`).value = value;
+
+            // Update visual state
+            document.querySelectorAll(`button[data-group="${group}"]`).forEach(btn => {
+                if (btn.dataset.value === value) {
+                    btn.classList.remove('btn-secondary');
+                    btn.classList.add('btn-primary');
+                    btn.style.backgroundColor = 'var(--primary-light)';
+                    btn.style.color = 'var(--primary-color)';
+                    btn.style.borderColor = 'var(--primary-color)';
+                } else {
+                    btn.classList.remove('btn-primary');
+                    btn.classList.add('btn-secondary');
+                    // Reset inline styles
+                    btn.style.backgroundColor = '';
+                    btn.style.color = '';
+                    btn.style.borderColor = '';
+                }
+            });
+        }
+
+        // Initialize state
+        let editId = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check for edit param
+            const urlParams = new URLSearchParams(window.location.search);
+            editId = urlParams.get('edit');
+
+            // Set specific defaults
+            selectOption('bedType', 'Single');
+            selectOption('breakfast', 'Include');
+
+            if (editId) {
+                const reservation = getReservationById(editId);
+                if (reservation) {
+                    document.getElementById('page-title').textContent = 'Edit Booking Reservation';
+
+                    // Populate fields
+                    const form = document.getElementById('booking-form');
+                    form.elements.fullName.value = reservation.fullName;
+                    form.elements.age.value = reservation.age;
+                    form.elements.idNumber.value = reservation.idNumber;
+                    form.elements.roomType.value = reservation.roomType;
+                    form.elements.peopleCount.value = reservation.peopleCount;
+                    form.elements.duration.value = reservation.duration;
+
+                    selectOption('bedType', reservation.bedType);
+                    selectOption('breakfast', reservation.breakfast);
+                }
+            }
+        });
+
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            const form = e.target;
+            const formData = {
+                fullName: form.elements.fullName.value,
+                age: form.elements.age.value,
+                idNumber: form.elements.idNumber.value,
+                roomType: form.elements.roomType.value,
+                peopleCount: Number(form.elements.peopleCount.value),
+                duration: Number(form.elements.duration.value),
+                bedType: form.elements.bedType.value,
+                breakfast: form.elements.breakfast.value
+            };
+
+            if (editId) {
+                updateReservation(editId, formData);
+                alert('Reservation updated successfully!');
+            } else {
+                addReservation(formData);
+                alert('Reservation created successfully!');
+            }
+            window.location.href = 'reservations.html';
+        }
+    </script>
+</body>
+
+</html>

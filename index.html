@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Boutique Hotel Management</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #e0f2f1 0%, #b3e5fc 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .login-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .hotel-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <div class="login-header">
+            <div class="hotel-icon">🏨</div>
+            <h1 style="font-size: 1.5rem; font-weight: 600; color: #333;">Boutique Hotel Management</h1>
+        </div>
+
+        <form onsubmit="handleLogin(event)">
+            <div style="margin-bottom: 2rem;">
+                <h2 style="font-size: 1.25rem; font-weight: 600; color: #333; margin-bottom: 0.5rem;">Welcome back, Team</h2>
+                <p style="color: var(--primary-color); font-size: 0.875rem;">Please enter your credentials to access the management dashboard.</p>
+            </div>
+
+            <div class="form-group">
+                <label class="label" for="email">Username or Email</label>
+                <input type="email" id="email" class="input" placeholder="staff_member@boutiquehotel.com" required>
+            </div>
+
+            <div class="form-group">
+                <div class="flex justify-between items-center" style="margin-bottom: 0.5rem;">
+                    <label class="label" style="margin-bottom: 0;" for="password">Password</label>
+                    <a href="#" style="font-size: 0.75rem; color: var(--primary-color); text-decoration: none;">Forgot password?</a>
+                </div>
+                <div style="position: relative;">
+                    <input type="password" id="password" class="input" placeholder="Enter your password" required>
+                    <button type="button" onclick="togglePassword()" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer;">👁</button>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                Sign In →
+            </button>
+        </form>
+
+        <div style="text-align: center; margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid #e5e7eb;">
+            <p style="font-size: 0.75rem; color: #9ca3af; margin-bottom: 0.5rem; letter-spacing: 0.05em;">SYSTEM V2.0 • SECURE PORTAL</p>
+            <div style="display: flex; justify-content: center; gap: 1rem;">
+                <a href="#" style="font-size: 0.75rem; color: var(--primary-color); text-decoration: none;">Help Center</a>
+                <a href="#" style="font-size: 0.75rem; color: var(--primary-color); text-decoration: none;">Privacy Policy</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function handleLogin(e) {
+            e.preventDefault();
+            // Mock login
+            window.location.href = 'home.html';
+        }
+
+        function togglePassword() {
+            const input = document.getElementById('password');
+            input.type = input.type === 'password' ? 'text' : 'password';
+        }
+    </script>
+</body>
+</html>

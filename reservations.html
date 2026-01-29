@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reservations - Boutique Hotel Management</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+
+<body>
+    <div id="layout-container"></div>
+
+    <main class="container" style="padding-top: 2rem; padding-bottom: 2rem;">
+        <div class="flex justify-between items-center mb-8">
+            <div>
+                <h1 style="font-size: 1.875rem; font-weight: 700; color: var(--text-dark);">Reservations</h1>
+                <p style="color: var(--text-light); margin-top: 0.5rem;">Manage active guest bookings and financial
+                    workflows.</p>
+            </div>
+            <a href="create-booking.html" class="btn btn-primary">
+                + New Booking
+            </a>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm" style="overflow: hidden; border: 1px solid var(--border-color);">
+            <div class="table-container" style="border: none;">
+                <table class="table" id="reservations-table">
+                    <thead>
+                        <tr>
+                            <th>Client Details</th>
+                            <th>Room Type</th>
+                            <th>Stay Duration</th>
+                            <th>Status</th>
+                            <th style="text-align: right;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reservations-body">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+            <div id="no-reservations"
+                style="padding: 3rem; text-align: center; color: var(--text-light); display: none;">
+                No reservations found. Create a new booking to get started.
+            </div>
+        </div>
+    </main>
+
+    <script src="assets/js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            renderReservations();
+        });
+
+        function renderReservations() {
+            const reservations = getReservations();
+            const tbody = document.getElementById('reservations-body');
+            const noData = document.getElementById('no-reservations');
+
+            if (reservations.length === 0) {
+                tbody.innerHTML = '';
+                noData.style.display = 'block';
+                return;
+            }
+
+            noData.style.display = 'none';
+            tbody.innerHTML = reservations.map(res => `
+                <tr>
+                    <td>
+                        <div class="flex items-center gap-6" style="gap: 0.75rem;">
+                            <div style="width: 2.5rem; height: 2.5rem; border-radius: 9999px; background-color: var(--primary-light); color: var(--primary-hover); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.875rem;">
+                                ${res.fullName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()}
+                            </div>
+                            <div>
+                                <div style="font-weight: 500; color: var(--text-dark);">${res.fullName}</div>
+                                <div style="font-size: 0.75rem; color: #9ca3af;">ID: ${res.idNumber}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="badge" style="background-color: #f3f4f6; color: var(--text-medium);">${res.roomType}</span>
+                    </td>
+                    <td>
+                        <div style="font-size: 0.875rem; color: var(--text-medium);">${res.date}</div>
+                        <div style="font-size: 0.75rem; color: #9ca3af;">${res.duration} Nights</div>
+                    </td>
+                    <td>
+                        <span class="badge badge-success">
+                            ${res.status}
+                        </span>
+                    </td>
+                    <td style="text-align: right;">
+                        <button onclick="window.location.href='create-booking.html?edit=${res.id}'" class="btn btn-secondary" style="padding: 0.25rem 0.75rem; font-size: 0.875rem;">Edit</button>
+                        <button onclick="confirmDelete('${res.id}')" class="btn btn-danger" style="padding: 0.25rem 0.75rem; font-size: 0.875rem; margin-left: 0.5rem;">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function confirmDelete(id) {
+            if (confirm('Are you sure you want to delete this reservation?')) {
+                deleteReservation(id);
+                renderReservations();
+            }
+        }
+    </script>
+</body>
+
+</html>

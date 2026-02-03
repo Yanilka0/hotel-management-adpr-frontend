@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Boutique Hotel Management</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #e0f2f1 0%, #b3e5fc 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .login-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .hotel-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+
+        .error-message {
+            color: #dc2626;
+            background-color: #fee2e2;
+            padding: 0.75rem;
+            border-radius: 0.375rem;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            display: none;
+        }
+
+        .success-message {
+            color: #166534;
+            background-color: #dcfce7;
+            padding: 0.75rem;
+            border-radius: 0.375rem;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-card">
+        <div class="login-header">
+            <div class="hotel-icon">🏨</div>
+            <h1 style="font-size: 1.5rem; font-weight: 600; color: #333;">Create Account</h1>
+        </div>
+
+        <div id="errorMessage" class="error-message"></div>
+        <div id="successMessage" class="success-message"></div>
+
+        <form onsubmit="handleRegister(event)">
+            <div style="margin-bottom: 2rem;">
+                <h2 style="font-size: 1.25rem; font-weight: 600; color: #333; margin-bottom: 0.5rem;">Join the Team</h2>
+                <p style="color: var(--primary-color); font-size: 0.875rem;">Create your staff account to access the
+                    management dashboard.</p>
+            </div>
+
+            <div class="form-group">
+                <label class="label" for="fullName">Full Name</label>
+                <input type="text" id="fullName" class="input" placeholder="John Doe" required>
+            </div>
+
+            <div class="form-group">
+                <label class="label" for="email">Email Address</label>
+                <input type="email" id="email" class="input" placeholder="staff@boutiquehotel.com" required>
+            </div>
+
+            <div class="form-group">
+                <label class="label" for="role">Role</label>
+                <select id="role" class="input" required>
+                    <option value="USER">Staff Member</option>
+                    <option value="ADMIN">Administrator</option>
+                </select>
+            </div>
+
+            <button type="submit" id="submitBtn" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                Create Account →
+            </button>
+        </form>
+
+        <div style="text-align: center; margin-top: 1.5rem;">
+            <p style="font-size: 0.875rem; color: #4b5563;">
+                Already have an account?
+                <a href="index.html" style="color: var(--primary-color); text-decoration: none; font-weight: 500;">Sign
+                    In</a>
+            </p>
+        </div>
+
+        <div style="text-align: center; margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid #e5e7eb;">
+            <p style="font-size: 0.75rem; color: #9ca3af; margin-bottom: 0.5rem; letter-spacing: 0.05em;">SYSTEM V2.0 •
+                SECURE PORTAL</p>
+        </div>
+    </div>
+
+    <script>
+        async function handleRegister(e) {
+            e.preventDefault();
+
+            const fullName = document.getElementById('fullName').value;
+            const email = document.getElementById('email').value;
+            const role = document.getElementById('role').value;
+            const submitBtn = document.getElementById('submitBtn');
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+
+            // Reset messages
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Creating Account...';
+
+            try {
+                // Construct JSON request body
+                const requestBody = {
+                    email: email,
+                    fullName: fullName,
+                    role: role
+                };
+
+                const response = await fetch('http://localhost:8081/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+
+                if (response.ok) {
+                    successMessage.textContent = 'Registration successful! Redirecting to login...';
+                    successMessage.style.display = 'block';
+
+                    // Clear form
+                    e.target.reset();
+
+                    // Redirect after a short delay
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 2000);
+                } else {
+                    const errorText = await response.text();
+                    throw new Error(errorText || 'Registration failed. Please try again.');
+                }
+            } catch (error) {
+                console.error('Registration error:', error);
+                errorMessage.textContent = error.message;
+                errorMessage.style.display = 'block';
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Create Account →';
+            }
+        }
+    </script>
+</body>
+
+</html>

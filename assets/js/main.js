@@ -66,7 +66,7 @@ const renderLayout = () => {
         <header class="header-main">
             <div class="brand">
                 <div class="brand-icon">🏨</div>
-                <h1 class="brand-text">Boutique Hotel Management</h1>
+                <h1 class="brand-text">Grand Vista</h1>
             </div>
             <div style="position: relative;">
                 <button class="user-menu-btn" onclick="toggleUserMenu()">TM</button>

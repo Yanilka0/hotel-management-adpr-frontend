@@ -53,49 +53,74 @@
             renderReservations();
         });
 
-        function renderReservations() {
-            const reservations = getReservations();
+        async function renderReservations() {
             const tbody = document.getElementById('reservations-body');
             const noData = document.getElementById('no-reservations');
 
-            if (reservations.length === 0) {
-                tbody.innerHTML = '';
-                noData.style.display = 'block';
-                return;
-            }
-
+            // Show loading state
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 2rem;">Loading reservations...</td></tr>';
             noData.style.display = 'none';
-            tbody.innerHTML = reservations.map(res => `
-                <tr>
-                    <td>
-                        <div class="flex items-center gap-6" style="gap: 0.75rem;">
-                            <div style="width: 2.5rem; height: 2.5rem; border-radius: 9999px; background-color: var(--primary-light); color: var(--primary-hover); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.875rem;">
-                                ${res.fullName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()}
-                            </div>
-                            <div>
-                                <div style="font-weight: 500; color: var(--text-dark);">${res.fullName}</div>
-                                <div style="font-size: 0.75rem; color: #9ca3af;">ID: ${res.idNumber}</div>
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <span class="badge" style="background-color: #f3f4f6; color: var(--text-medium);">${res.roomType}</span>
-                    </td>
-                    <td>
-                        <div style="font-size: 0.875rem; color: var(--text-medium);">${res.date}</div>
-                        <div style="font-size: 0.75rem; color: #9ca3af;">${res.duration} Nights</div>
-                    </td>
-                    <td>
-                        <span class="badge badge-success">
-                            ${res.status}
-                        </span>
-                    </td>
-                    <td style="text-align: right;">
-                        <button onclick="window.location.href='create-booking.html?edit=${res.id}'" class="btn btn-secondary" style="padding: 0.25rem 0.75rem; font-size: 0.875rem;">Edit</button>
-                        <button onclick="confirmDelete('${res.id}')" class="btn btn-danger" style="padding: 0.25rem 0.75rem; font-size: 0.875rem; margin-left: 0.5rem;">Delete</button>
-                    </td>
-                </tr>
-            `).join('');
+
+            try {
+                const response = await fetch('http://localhost:8081/api/bookings', {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch reservations');
+                }
+
+                const reservations = await response.json();
+
+                if (reservations.length === 0) {
+                    tbody.innerHTML = '';
+                    noData.style.display = 'block';
+                    return;
+                }
+
+                noData.style.display = 'none';
+                tbody.innerHTML = reservations.map(res => {
+                    const statusClass = res.status === 'CONFIRMED' ? 'badge-success' : 'badge-secondary';
+                    const initials = res.clientName ? res.clientName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : '??';
+
+                    return `
+                        <tr>
+                            <td>
+                                <div class="flex items-center gap-6" style="gap: 0.75rem;">
+                                    <div style="width: 2.5rem; height: 2.5rem; border-radius: 9999px; background-color: var(--primary-light); color: var(--primary-hover); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.875rem;">
+                                        ${initials}
+                                    </div>
+                                    <div>
+                                        <div style="font-weight: 500; color: var(--text-dark);">${res.clientName || 'N/A'}</div>
+                                        <div style="font-size: 0.75rem; color: #9ca3af;">${res.clientContact || 'No contact'}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge" style="background-color: #f3f4f6; color: var(--text-medium);">${res.roomType}</span>
+                            </td>
+                            <td>
+                                <div style="font-size: 0.875rem; color: var(--text-medium);">${res.stayDuration}</div>
+                            </td>
+                            <td>
+                                <span class="badge ${statusClass}">
+                                    ${res.status}
+                                </span>
+                            </td>
+                            <td style="text-align: right;">
+                                <button onclick="window.location.href='create-booking.html?edit=${res.id}'" class="btn btn-secondary" style="padding: 0.25rem 0.75rem; font-size: 0.875rem;">Edit</button>
+                                <button onclick="confirmDelete('${res.id}')" class="btn btn-danger" style="padding: 0.25rem 0.75rem; font-size: 0.875rem; margin-left: 0.5rem;">Delete</button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error('Fetch error:', error);
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 2rem; color: var(--danger);">Error loading reservations: ${error.message}</td></tr>`;
+            }
         }
 
         function confirmDelete(id) {

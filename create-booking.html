@@ -195,9 +195,10 @@
             }
         });
 
-        function handleFormSubmit(e) {
+        async function handleFormSubmit(e) {
             e.preventDefault();
             const form = e.target;
+            const submitBtn = form.querySelector('button[type="submit"]');
 
             const checkIn = new Date(form.elements.checkInDate.value);
             const checkOut = new Date(form.elements.checkOutDate.value);
@@ -209,29 +210,48 @@
                 return;
             }
 
+            // Disable submit button and show loading state
+            const originalBtnText = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Saving...';
+
             const formData = {
                 fullName: form.elements.fullName.value,
-                age: form.elements.age.value,
+                age: Number(form.elements.age.value),
                 contactNumber: form.elements.contactNumber.value,
                 address: form.elements.address.value,
-                idNumber: form.elements.idNumber.value,
+                identificationId: form.elements.idNumber.value,
                 roomType: form.elements.roomType.value,
-                peopleCount: Number(form.elements.peopleCount.value),
+                people: Number(form.elements.peopleCount.value),
                 checkInDate: form.elements.checkInDate.value,
                 checkOutDate: form.elements.checkOutDate.value,
-                duration: durationDays,
                 bedType: form.elements.bedType.value,
-                breakfast: form.elements.breakfast.value
+                breakfastIncluded: form.elements.breakfast.value === 'Include'
             };
 
-            if (editId) {
-                updateReservation(editId, formData);
-                alert('Reservation updated successfully!');
-            } else {
-                addReservation(formData);
-                alert('Reservation created successfully!');
+            try {
+                const response = await fetch('http://localhost:8081/api/bookings', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    alert('Reservation created successfully!');
+                    window.location.href = 'reservations.html';
+                } else {
+                    const errorData = await response.text();
+                    throw new Error(errorData || 'Failed to create reservation.');
+                }
+            } catch (error) {
+                console.error('Booking error:', error);
+                alert('Error: ' + error.message);
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalBtnText;
             }
-            window.location.href = 'reservations.html';
         }
     </script>
 </body>

@@ -123,10 +123,27 @@
             }
         }
 
-        function confirmDelete(id) {
+        async function confirmDelete(id) {
             if (confirm('Are you sure you want to delete this reservation?')) {
-                deleteReservation(id);
-                renderReservations();
+                try {
+                    const response = await fetch(`http://localhost:8081/api/bookings?id=${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    });
+
+                    if (response.ok) {
+                        alert('Reservation deleted successfully.');
+                        renderReservations();
+                    } else {
+                        const errorText = await response.text();
+                        throw new Error(errorText || 'Failed to delete reservation.');
+                    }
+                } catch (error) {
+                    console.error('Delete error:', error);
+                    alert('Error: ' + error.message);
+                }
             }
         }
     </script>

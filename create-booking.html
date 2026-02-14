@@ -124,6 +124,62 @@
                     </div>
                 </div>
 
+                <!-- Live Calculation Section -->
+                <div class="bg-white rounded-xl shadow-sm"
+                    style="border: 1px solid var(--border-color); overflow: hidden;">
+                    <div
+                        style="border-bottom: 1px solid var(--border-color); padding: 1rem 1.5rem; background-color: #f9fafb;">
+                        <h2
+                            style="font-size: 0.875rem; font-weight: 600; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.05em;">
+                            💰 Booking Cost Calculation
+                        </h2>
+                    </div>
+                    <div class="p-6">
+                        <div
+                            style="background-color: #f9fafb; border-radius: 0.5rem; padding: 1.5rem; border: 1px solid var(--border-color);">
+                            <div style="display: grid; gap: 1rem; margin-bottom: 1.5rem;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="color: var(--text-light); font-size: 0.875rem;">Room Type:</span>
+                                    <span style="font-weight: 600; color: var(--text-dark);"
+                                        id="calc-room-type">Ordinary Room (Rs 1,000)</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="color: var(--text-light); font-size: 0.875rem;">Bed Type:</span>
+                                    <span style="font-weight: 600; color: var(--text-dark);" id="calc-bed-type">Single
+                                        (Rs 1,000)</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="color: var(--text-light); font-size: 0.875rem;">Breakfast Plan:</span>
+                                    <span style="font-weight: 600; color: var(--text-dark);" id="calc-breakfast">Include
+                                        (Rs 1,000)</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="color: var(--text-light); font-size: 0.875rem;">People Count:</span>
+                                    <span style="font-weight: 600; color: var(--text-dark);" id="calc-people">1</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="color: var(--text-light); font-size: 0.875rem;">Stay Duration:</span>
+                                    <span style="font-weight: 600; color: var(--text-dark);" id="calc-duration">0
+                                        days</span>
+                                </div>
+                            </div>
+                            <div
+                                style="border-top: 2px solid var(--border-color); padding-top: 1rem; margin-top: 1rem;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 1.125rem; font-weight: 700; color: var(--text-dark);">Total
+                                        Cost:</span>
+                                    <span style="font-size: 1.5rem; font-weight: 700; color: var(--primary-color);"
+                                        id="calc-total">Rs 0</span>
+                                </div>
+                                <p
+                                    style="font-size: 0.75rem; color: var(--text-light); margin-top: 0.5rem; text-align: right;">
+                                    Formula: (Room + Bed + Breakfast) × People × Days
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Footer -->
                 <div class="flex justify-between items-center"
                     style="padding-top: 1rem; border-top: 1px solid var(--border-color); justify-content: flex-end; gap: 1rem;">
@@ -134,6 +190,7 @@
         </form>
     </main>
 
+    <script src="assets/js/booking-calculator.js"></script>
     <script src="assets/js/main.js"></script>
     <script>
         // Form selection logic
@@ -158,6 +215,9 @@
                     btn.style.borderColor = '';
                 }
             });
+
+            // Trigger live calculation update (from booking-calculator.js)
+            updateLiveCalculation();
         }
 
         // Initialize state
@@ -193,6 +253,9 @@
                     selectOption('breakfast', reservation.breakfast);
                 }
             }
+
+            // Initialize live calculation (from booking-calculator.js)
+            initializeLiveCalculation('booking-form');
         });
 
         async function handleFormSubmit(e) {

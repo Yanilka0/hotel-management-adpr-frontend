@@ -47,6 +47,7 @@
         </div>
     </main>
 
+    <script src="assets/js/booking-calculator.js"></script>
     <script src="assets/js/main.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -111,6 +112,7 @@
                                 </span>
                             </td>
                             <td style="text-align: right;">
+                                <button onclick="showBill('${res.id}')" class="btn btn-primary" style="padding: 0.25rem 0.75rem; font-size: 0.875rem; margin-right: 0.5rem; background-color: var(--success); border-color: var(--success);">Bill</button>
                                 <button onclick="viewReservation('${res.id}')" class="btn btn-secondary" style="padding: 0.25rem 0.75rem; font-size: 0.875rem; margin-right: 0.5rem;">View</button>
                                 <button onclick="window.location.href='edit-reservation.html?id=${res.id}'" class="btn btn-secondary" style="padding: 0.25rem 0.75rem; font-size: 0.875rem;">Edit</button>
                                 <button onclick="confirmDelete('${res.id}')" class="btn btn-danger" style="padding: 0.25rem 0.75rem; font-size: 0.875rem; margin-left: 0.5rem;">Delete</button>
@@ -163,10 +165,75 @@
             document.getElementById('reservation-modal').classList.remove('active');
         }
 
+        async function showBill(id) {
+            try {
+                // Fetch specific reservation by ID
+                const response = await fetch(`http://localhost:8081/api/bookings?id=${id}`, {
+                    method: 'GET',
+                    headers: { 'Accept': 'application/json' }
+                });
+
+                if (!response.ok) throw new Error('Failed to fetch reservation details');
+
+                const data = await response.json();
+
+                // Calculate costs
+                const calculation = calculateBookingCost({
+                    roomType: data.roomType,
+                    bedType: data.bedType,
+                    breakfast: data.breakfastIncluded ? 'Include' : 'Exclude',
+                    peopleCount: data.people || 1,
+                    checkInDate: data.checkInDate,
+                    checkOutDate: data.checkOutDate
+                });
+
+                // Populate Bill Modal
+                document.getElementById('bill-client-name').textContent = data.clientName || 'N/A';
+                document.getElementById('bill-id').textContent = data.id || 'N/A';
+                document.getElementById('bill-date').textContent = new Date().toLocaleDateString();
+
+                // Line Items
+                document.getElementById('bill-room-type').textContent = `${data.roomType} (x${calculation.duration} nights)`;
+                document.getElementById('bill-room-price').textContent = `Rs ${calculation.roomPrice.toLocaleString()} / night`;
+
+                document.getElementById('bill-bed-type').textContent = `${data.bedType}`;
+                document.getElementById('bill-bed-price').textContent = `Rs ${calculation.bedPrice.toLocaleString()}`;
+
+                document.getElementById('bill-breakfast').textContent = data.breakfastIncluded ? 'Included' : 'Excluded';
+                document.getElementById('bill-breakfast-price').textContent = `Rs ${calculation.breakfastPrice.toLocaleString()}`;
+
+                document.getElementById('bill-people').textContent = `${data.people} Person(s)`;
+
+                // Totals
+                document.getElementById('bill-total-days').textContent = calculation.duration;
+                document.getElementById('bill-total-amount').textContent = `Rs ${calculation.totalCost.toLocaleString()}`;
+
+                // Show modal
+                document.getElementById('bill-modal').classList.add('active');
+            } catch (error) {
+                console.error('Error showing bill:', error);
+                alert('Failed to generate bill.');
+            }
+        }
+
+        function closeBillModal() {
+            document.getElementById('bill-modal').classList.remove('active');
+        }
+
+        function printBill() {
+            window.print();
+        }
+
         // Close modal when clicking outside
         document.getElementById('reservation-modal').addEventListener('click', (e) => {
             if (e.target.id === 'reservation-modal') {
                 closeModal();
+            }
+        });
+
+        document.getElementById('bill-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'bill-modal') {
+                closeBillModal();
             }
         });
 
@@ -267,6 +334,104 @@
                             <span class="detail-value" id="view-checkout">-</span>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Bill / Invoice Modal -->
+    <div id="bill-modal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header" style="background-color: white; border-bottom: none; padding-bottom: 0;">
+                <div style="width: 100%;"></div>
+                <button onclick="closeBillModal()" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body" style="padding: 2rem 3rem;">
+                <!-- Hotel Header -->
+                <div style="text-align: center; margin-bottom: 2.5rem;">
+                    <h2 style="font-size: 2rem; font-weight: 700; color: #0891b2; margin: 0 0 0.75rem 0;">Grand Vista
+                        Hotel</h2>
+                    <p style="color: #6b7280; font-size: 0.9rem; margin: 0.25rem 0;">123 Ocean Drive, Colombo</p>
+                    <p style="color: #6b7280; font-size: 0.9rem; margin: 0.25rem 0;">+94 11 234 5678</p>
+                </div>
+
+                <!-- Billing Info -->
+                <div style="display: flex; justify-content: space-between; margin-bottom: 2.5rem;">
+                    <div>
+                        <div
+                            style="font-size: 0.75rem; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">
+                            Billed To</div>
+                        <div style="font-weight: 600; font-size: 1.125rem; color: #1f2937;" id="bill-client-name">-
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div
+                            style="font-size: 0.75rem; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">
+                            Invoice #</div>
+                        <div style="font-weight: 600; font-size: 1rem; color: #1f2937;" id="bill-id">-</div>
+                        <div style="font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem;" id="bill-date">-</div>
+                    </div>
+                </div>
+
+                <div style="border-top: 1px solid #e5e7eb; margin-bottom: 1.5rem;"></div>
+
+                <!-- Items Table -->
+                <table style="width: 100%; margin-bottom: 2rem; border-collapse: collapse;">
+                    <thead>
+                        <tr>
+                            <th
+                                style="text-align: left; padding-bottom: 1rem; font-size: 0.75rem; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em;">
+                                Item</th>
+                            <th
+                                style="text-align: right; padding-bottom: 1rem; font-size: 0.75rem; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em;">
+                                Rate</th>
+                        </tr>
+                    </thead>
+                    <tbody style="color: #1f2937;">
+                        <tr>
+                            <td style="padding: 1rem 0; font-size: 0.95rem;" id="bill-room-type">-</td>
+                            <td style="text-align: right; padding: 1rem 0; font-size: 0.95rem;" id="bill-room-price">-
+                            </td>
+                        </tr>
+                        <tr style="border-top: 1px solid #f3f4f6;">
+                            <td style="padding: 1rem 0; font-size: 0.95rem;">Bed: <span id="bill-bed-type">-</span></td>
+                            <td style="text-align: right; padding: 1rem 0; font-size: 0.95rem;" id="bill-bed-price">-
+                            </td>
+                        </tr>
+                        <tr style="border-top: 1px solid #f3f4f6;">
+                            <td style="padding: 1rem 0; font-size: 0.95rem;">Breakfast: <span
+                                    id="bill-breakfast">-</span></td>
+                            <td style="text-align: right; padding: 1rem 0; font-size: 0.95rem;"
+                                id="bill-breakfast-price">-</td>
+                        </tr>
+                        <tr style="border-top: 1px solid #f3f4f6;">
+                            <td style="padding: 1rem 0; font-size: 0.95rem;">People Count</td>
+                            <td style="text-align: right; padding: 1rem 0; font-size: 0.95rem;" id="bill-people">1</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div style="border-top: 1px solid #e5e7eb; margin-bottom: 1.5rem;"></div>
+
+                <!-- Total Section -->
+                <div style="margin-bottom: 2rem;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                        <span style="font-size: 1rem; color: #1f2937;">Total Nights</span>
+                        <span style="font-weight: 600; font-size: 1rem; color: #1f2937;" id="bill-total-days">-</span>
+                    </div>
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; padding-top: 1rem; border-top: 1px solid #e5e7eb;">
+                        <span style="font-size: 1.25rem; font-weight: 700; color: #1f2937;">Total Amount</span>
+                        <span style="font-size: 2rem; font-weight: 700; color: #0891b2;" id="bill-total-amount">Rs
+                            0</span>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div style="margin-top: 2.5rem; display: flex; gap: 1rem;">
+                    <button onclick="printBill()" class="btn btn-primary"
+                        style="flex: 1; background-color: #0891b2; border-color: #0891b2;">🖨️ Print / Download
+                        PDF</button>
+                    <button onclick="closeBillModal()" class="btn btn-secondary" style="flex: 1;">Close</button>
                 </div>
             </div>
         </div>

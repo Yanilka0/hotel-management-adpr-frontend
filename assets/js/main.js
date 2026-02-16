@@ -85,6 +85,7 @@ const renderLayout = () => {
                 <li><a href="home.html" class="nav-link ${path === 'home.html' ? 'active' : ''}">Dashboard</a></li>
                 <li><a href="create-booking.html" class="nav-link ${path === 'create-booking.html' ? 'active' : ''}">New Booking</a></li>
                 <li><a href="reservations.html" class="nav-link ${path === 'reservations.html' ? 'active' : ''}">Reservations</a></li>
+                <li><a href="help.html" class="nav-link ${path === 'help.html' ? 'active' : ''}">Help</a></li>
                 <li><a href="#" class="nav-link">Settings</a></li>
             </ul>
         </nav>

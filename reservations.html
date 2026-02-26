@@ -82,6 +82,10 @@
                     return;
                 }
 
+                const userInfoStr = localStorage.getItem('userInfo');
+                const userInfo = userInfoStr ? JSON.parse(userInfoStr) : null;
+                const isManager = userInfo && userInfo.role === 'MANAGER';
+
                 noData.style.display = 'none';
                 tbody.innerHTML = reservations.map(res => {
                     const statusClass = res.status === 'CONFIRMED' ? 'badge-success' : 'badge-secondary';
@@ -115,7 +119,7 @@
                                 <button onclick="showBill('${res.id}')" class="btn btn-primary" style="padding: 0.25rem 0.75rem; font-size: 0.875rem; margin-right: 0.5rem; background-color: var(--success); border-color: var(--success);">Bill</button>
                                 <button onclick="viewReservation('${res.id}')" class="btn btn-secondary" style="padding: 0.25rem 0.75rem; font-size: 0.875rem; margin-right: 0.5rem;">View</button>
                                 <button onclick="window.location.href='edit-reservation.html?id=${res.id}'" class="btn btn-secondary" style="padding: 0.25rem 0.75rem; font-size: 0.875rem;">Edit</button>
-                                <button onclick="confirmDelete('${res.id}')" class="btn btn-danger" style="padding: 0.25rem 0.75rem; font-size: 0.875rem; margin-left: 0.5rem;">Delete</button>
+                                ${isManager ? `<button onclick="confirmDelete('${res.id}')" class="btn btn-danger" style="padding: 0.25rem 0.75rem; font-size: 0.875rem; margin-left: 0.5rem;">Delete</button>` : ''}
                             </td>
                         </tr>
                     `;

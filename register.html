@@ -8,11 +8,7 @@
     <link rel="stylesheet" href="assets/css/style.css">
     <style>
         body {
-            background: linear-gradient(135deg, #e0f2f1 0%, #b3e5fc 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
+            background-color: #f3f4f6;
         }
 
         .login-card {
@@ -55,63 +51,77 @@
             display: none;
         }
     </style>
+    <script>
+        // Restrict access to MANAGER role only
+        const userInfoStr = localStorage.getItem('userInfo');
+        if (!userInfoStr) {
+            window.location.href = 'index.html';
+        } else {
+            const userInfo = JSON.parse(userInfoStr);
+            if (userInfo.role !== 'MANAGER') {
+                window.location.href = 'home.html';
+            }
+        }
+    </script>
 </head>
 
 <body>
-    <div class="login-card">
-        <div class="login-header">
-            <div class="hotel-icon">🏨</div>
-            <h1 style="font-size: 1.5rem; font-weight: 600; color: #333;">Create Account</h1>
+    <div id="layout-container"></div>
+    <main class="container" style="padding-top: 2rem; padding-bottom: 2rem; max-width: 600px; margin: 0 auto;">
+        <div class="mb-8 text-center" style="margin-bottom: 2rem; text-align: center;">
+            <div class="hotel-icon" style="font-size: 2.5rem; margin-bottom: 0.5rem; display: inline-block;">🏨</div>
+            <h1 style="font-size: 1.875rem; font-weight: 700; color: #333;">Staff Management</h1>
+            <p style="color: var(--primary-color); font-size: 0.875rem; margin-top: 0.5rem;">Register a new staff
+                account to access the management dashboard.</p>
         </div>
 
         <div id="errorMessage" class="error-message"></div>
         <div id="successMessage" class="success-message"></div>
 
-        <form onsubmit="handleRegister(event)">
-            <div style="margin-bottom: 2rem;">
-                <h2 style="font-size: 1.25rem; font-weight: 600; color: #333; margin-bottom: 0.5rem;">Join the Team</h2>
-                <p style="color: var(--primary-color); font-size: 0.875rem;">Create your staff account to access the
-                    management dashboard.</p>
+        <form id="register-form" onsubmit="handleRegister(event)" class="bg-white rounded-xl shadow-sm p-6"
+            style="border: 1px solid var(--border-color); padding: 2rem; border-radius: 0.75rem; background: white; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label class="label" for="fullName"
+                    style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Full Name</label>
+                <input type="text" id="fullName" class="input" placeholder="John Doe" required
+                    style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.375rem; outline: none;">
             </div>
 
-            <div class="form-group">
-                <label class="label" for="fullName">Full Name</label>
-                <input type="text" id="fullName" class="input" placeholder="John Doe" required>
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label class="label" for="email"
+                    style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Email
+                    Address</label>
+                <input type="email" id="email" class="input" placeholder="staff@boutiquehotel.com" required
+                    style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.375rem; outline: none;">
             </div>
 
-            <div class="form-group">
-                <label class="label" for="email">Email Address</label>
-                <input type="email" id="email" class="input" placeholder="staff@boutiquehotel.com" required>
-            </div>
-
-            <div class="form-group">
-                <label class="label" for="role">Role</label>
-                <select id="role" class="input" required>
-                    <option value="USER">Staff Member</option>
-                    <option value="ADMIN">Administrator</option>
+            <div class="form-group" style="margin-bottom: 2rem;">
+                <label class="label" for="role"
+                    style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Role</label>
+                <select id="role" class="input" required
+                    style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.375rem; outline: none; background-color: white;">
+                    <option value="RECEPTIONIST">Receptionist</option>
+                    <option value="MANAGER">Manager</option>
                 </select>
             </div>
 
-            <button type="submit" id="submitBtn" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
-                Create Account →
+            <button type="submit" id="submitBtn" class="btn btn-primary"
+                style="width: 100%; padding: 0.75rem; background-color: var(--primary-color); color: white; border: none; border-radius: 0.375rem; font-weight: 600; cursor: pointer; transition: background-color 0.2s;">
+                Create Account &rarr;
             </button>
         </form>
+    </main>
 
-        <div style="text-align: center; margin-top: 1.5rem;">
-            <p style="font-size: 0.875rem; color: #4b5563;">
-                Already have an account?
-                <a href="index.html" style="color: var(--primary-color); text-decoration: none; font-weight: 500;">Sign
-                    In</a>
-            </p>
-        </div>
-
-        <div style="text-align: center; margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid #e5e7eb;">
-            <p style="font-size: 0.75rem; color: #9ca3af; margin-bottom: 0.5rem; letter-spacing: 0.05em;">SYSTEM V2.0 •
-                SECURE PORTAL</p>
-        </div>
-    </div>
-
+    <script src="assets/js/main.js"></script>
     <script>
+        // Use main.js layout function
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof renderLayout === 'function') {
+                renderLayout();
+            }
+        });
+
         async function handleRegister(e) {
             e.preventDefault();
 
@@ -152,9 +162,9 @@
                     // Clear form
                     e.target.reset();
 
-                    // Redirect after a short delay
+                    // Optional: redirect to staff list or show success
                     setTimeout(() => {
-                        window.location.href = 'index.html';
+                        window.location.href = 'home.html';
                     }, 2000);
                 } else {
                     const errorText = await response.text();

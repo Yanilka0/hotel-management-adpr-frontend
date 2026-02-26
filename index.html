@@ -84,9 +84,7 @@
 
         <div style="text-align: center; margin-top: 1.5rem;">
             <p style="font-size: 0.875rem; color: #4b5563;">
-                New staff member?
-                <a href="register.html"
-                    style="color: var(--primary-color); text-decoration: none; font-weight: 500;">Create an account</a>
+                Contact your Administrator for access.
             </p>
         </div>
 
@@ -103,6 +101,11 @@
     </div>
 
     <script>
+        // Redirect to home if already logged in
+        if (localStorage.getItem('userInfo')) {
+            window.location.href = 'home.html';
+        }
+
         async function handleLogin(e) {
             e.preventDefault();
 

@@ -43,7 +43,7 @@
                 <p style="color: var(--text-light); font-size: 0.875rem;">Access documentation and support resources</p>
             </a>
 
-            <div class="card-link" style="cursor: default;">
+            <div class="card-link" id="reports-card" style="cursor: default;">
                 <div class="card-icon">📊</div>
                 <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.5rem;">
                     Reports</h3>
@@ -53,6 +53,16 @@
     </main>
 
     <script src="assets/js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const userInfoStr = localStorage.getItem('userInfo');
+            const userInfo = userInfoStr ? JSON.parse(userInfoStr) : null;
+            if (userInfo && userInfo.role === 'RECEPTIONIST') {
+                const reportsCard = document.getElementById('reports-card');
+                if (reportsCard) reportsCard.style.display = 'none';
+            }
+        });
+    </script>
 </body>
 
 </html>

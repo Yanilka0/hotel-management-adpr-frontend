@@ -55,6 +55,19 @@ const getReservationById = (id) => {
 // --- UI & Layout Functionality ---
 
 const renderLayout = () => {
+    // Auth Check for protected pages
+    const isLoginPage = window.location.pathname.endsWith('index.html') || window.location.pathname.endsWith('register.html') || window.location.pathname === '/';
+    const userInfoStr = localStorage.getItem('userInfo');
+
+    if (!isLoginPage && !userInfoStr) {
+        window.location.href = 'index.html';
+        return;
+    }
+
+    const userInfo = userInfoStr ? JSON.parse(userInfoStr) : null;
+    const isManager = userInfo?.role === 'MANAGER';
+    const isReceptionist = userInfo?.role === 'RECEPTIONIST';
+
     const layoutContainer = document.getElementById('layout-container');
     if (!layoutContainer) return;
 
@@ -69,11 +82,12 @@ const renderLayout = () => {
                 <h1 class="brand-text">Grand Vista</h1>
             </div>
             <div style="position: relative;">
-                <button class="user-menu-btn" onclick="toggleUserMenu()">TM</button>
+                <button class="user-menu-btn" onclick="toggleUserMenu()">${userInfo ? userInfo.fullName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'TM'}</button>
                 <div id="user-menu" style="display: none; position: absolute; right: 0; top: 100%; margin-top: 0.5rem; width: 12rem; background: white; border-radius: 0.5rem; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border: 1px solid var(--border-color); overflow: hidden; z-index: 50;">
                     <div style="padding: 0.75rem 1rem; border-bottom: 1px solid var(--border-color); background-color: #f9fafb;">
-                        <p style="font-weight: 500; color: var(--text-dark); font-size: 0.875rem;">Team Member</p>
-                        <p style="color: var(--text-light); font-size: 0.75rem;">staff@hotel.com</p>
+                        <p style="font-weight: 500; color: var(--text-dark); font-size: 0.875rem;">${userInfo ? userInfo.fullName : 'Team Member'}</p>
+                        <p style="color: var(--text-light); font-size: 0.75rem;">${userInfo ? userInfo.role : 'Staff'}</p>
+                        <p style="color: var(--text-light); font-size: 0.75rem;">${userInfo ? userInfo.email : 'staff@hotel.com'}</p>
                     </div>
                     <button onclick="handleLogout()" style="width: 100%; text-align: left; padding: 0.5rem 1rem; color: var(--danger); background: none; border: none; cursor: pointer; font-size: 0.875rem;">Logout</button>
                 </div>
@@ -85,8 +99,9 @@ const renderLayout = () => {
                 <li><a href="home.html" class="nav-link ${path === 'home.html' ? 'active' : ''}">Dashboard</a></li>
                 <li><a href="create-booking.html" class="nav-link ${path === 'create-booking.html' ? 'active' : ''}">New Booking</a></li>
                 <li><a href="reservations.html" class="nav-link ${path === 'reservations.html' ? 'active' : ''}">Reservations</a></li>
+                ${isManager ? `<li><a href="register.html" class="nav-link ${path === 'register.html' ? 'active' : ''}">Staff Management</a></li>` : ''}
                 <li><a href="help.html" class="nav-link ${path === 'help.html' ? 'active' : ''}">Help</a></li>
-                <li><a href="#" class="nav-link">Settings</a></li>
+                ${isManager ? `<li><a href="#" class="nav-link">Settings</a></li>` : ''}
             </ul>
         </nav>
     `;
@@ -103,6 +118,8 @@ const toggleUserMenu = () => {
 
 const handleLogout = () => {
     if (confirm('Are you sure you want to logout?')) {
+        localStorage.removeItem('userInfo');
+        localStorage.removeItem('authToken');
         window.location.href = 'index.html';
     }
 };

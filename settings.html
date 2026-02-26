@@ -46,7 +46,7 @@
                 style="display: flex; gap: 1rem; align-items: flex-end; margin-bottom: 2rem;">
                 <div style="flex: 1;">
                     <label for="roomType"
-                        style="display: block; font-sm; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">Room
+                        style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">Room
                         Type</label>
                     <select id="roomType" class="input w-full" required
                         style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem;">
@@ -59,7 +59,7 @@
                 </div>
                 <div style="flex: 1;">
                     <label for="totalRooms"
-                        style="display: block; font-sm; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">Total
+                        style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">Total
                         Rooms Capacity</label>
                     <input type="number" id="totalRooms" min="0" class="input w-full" required
                         style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem;">
@@ -82,11 +82,14 @@
                             <th
                                 style="padding: 0.75rem 1rem; border-bottom: 1px solid #e5e7eb; font-weight: 500; color: #6b7280; font-size: 0.875rem;">
                                 Total Capacity</th>
+                            <th
+                                style="padding: 0.75rem 1rem; border-bottom: 1px solid #e5e7eb; font-weight: 500; color: #6b7280; font-size: 0.875rem; text-align: right;">
+                                Actions</th>
                         </tr>
                     </thead>
                     <tbody id="settingsTableBody">
                         <tr>
-                            <td colspan="2" style="padding: 1rem; text-align: center; color: #6b7280;">Loading
+                            <td colspan="3" style="padding: 1rem; text-align: center; color: #6b7280;">Loading
                                 configuration...</td>
                         </tr>
                     </tbody>
@@ -113,7 +116,7 @@
             } catch (error) {
                 console.error(error);
                 const tbody = document.getElementById('settingsTableBody');
-                tbody.innerHTML = `<tr><td colspan="2" style="padding: 1rem; text-align: center; color: #dc2626;">Error loading configuration</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="3" style="padding: 1rem; text-align: center; color: #dc2626;">Error loading configuration</td></tr>`;
             }
         }
 
@@ -121,7 +124,7 @@
             const tbody = document.getElementById('settingsTableBody');
 
             if (settings.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="2" style="padding: 1rem; text-align: center; color: #6b7280;">No explicit room configurations defined yet.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="3" style="padding: 1rem; text-align: center; color: #6b7280;">No explicit room configurations defined yet.</td></tr>`;
                 return;
             }
 
@@ -138,9 +141,24 @@
                             ${setting.totalRooms}
                         </span>
                     </td>
+                    <td style="padding: 0.75rem 1rem; text-align: right;">
+                        <button onclick="editSetting('${setting.roomType}', ${setting.totalRooms})" style="padding: 0.375rem 0.75rem; background-color: white; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; font-weight: 500; color: #374151; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.backgroundColor='#f9fafb'" onmouseout="this.style.backgroundColor='white'">
+                            Edit
+                        </button>
+                    </td>
                 `;
                 tbody.appendChild(tr);
             });
+        }
+
+        function editSetting(roomType, totalRooms) {
+            document.getElementById('roomType').value = roomType;
+            document.getElementById('totalRooms').value = totalRooms;
+            document.getElementById('totalRooms').focus();
+
+            // Optionally change the submit button text
+            const saveBtn = document.querySelector('#settingsForm button[type="submit"]');
+            if (saveBtn) saveBtn.textContent = 'Update';
         }
 
         async function handleSaveSettings(e) {
@@ -164,6 +182,10 @@
                     statusMsg.style.display = 'block';
 
                     document.getElementById('totalRooms').value = '';
+
+                    const saveBtn = document.querySelector('#settingsForm button[type="submit"]');
+                    if (saveBtn) saveBtn.textContent = 'Save';
+
                     fetchSettings(); // Refresh
                 } else {
                     const err = await response.text();

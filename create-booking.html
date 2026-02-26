@@ -12,6 +12,10 @@
     <div id="layout-container"></div>
 
     <main class="container" style="padding-top: 2rem; padding-bottom: 2rem; max-width: 1024px;">
+        <div id="availability-warning"
+            style="display: none; background-color: #fee2e2; border: 1px solid #f87171; color: #b91c1c; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1.5rem; font-weight: 500;">
+            Not enough rooms available for these dates and room type. Please adjust your selection.
+        </div>
         <div class="mb-8">
             <h1 class="text-3xl font-bold" id="page-title"
                 style="font-size: 1.875rem; font-weight: 700; color: var(--text-dark);">New Booking Reservation</h1>
@@ -71,10 +75,12 @@
                         <div class="grid md-grid-cols-2 gap-6" style="margin-bottom: 1.5rem;">
                             <div class="form-group">
                                 <label class="label">Room Type</label>
-                                <select name="roomType" class="select">
-                                    <option value="Normal">Ordinary Room</option>
-                                    <option value="Semi Luxury">Semi Luxury</option>
-                                    <option value="Luxury">Luxury</option>
+                                <select name="roomType" id="roomType" class="select">
+                                    <option value="Single">Single</option>
+                                    <option value="Double">Double</option>
+                                    <option value="Suite">Suite</option>
+                                    <option value="Deluxe">Deluxe</option>
+                                    <option value="Family">Family</option>
                                 </select>
                             </div>
                             <div class="form-group">
@@ -83,11 +89,11 @@
                             </div>
                             <div class="form-group">
                                 <label class="label">Check-in Date</label>
-                                <input type="date" name="checkInDate" class="input" required>
+                                <input type="date" name="checkInDate" id="checkInDate" class="input" required>
                             </div>
                             <div class="form-group">
                                 <label class="label">Check-out Date</label>
-                                <input type="date" name="checkOutDate" class="input" required>
+                                <input type="date" name="checkOutDate" id="checkOutDate" class="input" required>
                             </div>
                         </div>
 
@@ -184,7 +190,7 @@
                 <div class="flex justify-between items-center"
                     style="padding-top: 1rem; border-top: 1px solid var(--border-color); justify-content: flex-end; gap: 1rem;">
                     <a href="home.html" class="btn btn-secondary">Cancel</a>
-                    <button type="submit" class="btn btn-primary">Save Reservation ✓</button>
+                    <button type="submit" id="save-btn" class="btn btn-primary">Save Reservation ✓</button>
                 </div>
             </div>
         </form>
@@ -256,6 +262,50 @@
 
             // Initialize live calculation (from booking-calculator.js)
             initializeLiveCalculation('booking-form');
+
+            // Setup listeners for availability check
+            const checkInInput = document.getElementById('checkInDate');
+            const checkOutInput = document.getElementById('checkOutDate');
+            const roomTypeInput = document.getElementById('roomType');
+
+            const checkAvailability = async () => {
+                const checkIn = checkInInput.value;
+                const checkOut = checkOutInput.value;
+                const roomType = roomTypeInput.value;
+
+                if (!checkIn || !checkOut || !roomType) return;
+
+                const d1 = new Date(checkIn);
+                const d2 = new Date(checkOut);
+                if (d2 <= d1) return;
+
+                const warningBox = document.getElementById('availability-warning');
+                const saveBtn = document.getElementById('save-btn');
+
+                try {
+                    const response = await fetch(`http://localhost:8081/api/availability?checkIn=${checkIn}&checkOut=${checkOut}${editId ? '&ignoreId=' + editId : ''}`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        const available = data[roomType] || 0;
+
+                        if (available <= 0) {
+                            warningBox.style.display = 'block';
+                            saveBtn.disabled = true;
+                            saveBtn.style.opacity = '0.5';
+                        } else {
+                            warningBox.style.display = 'none';
+                            saveBtn.disabled = false;
+                            saveBtn.style.opacity = '1';
+                        }
+                    }
+                } catch (e) {
+                    console.error("Failed to check availability", e);
+                }
+            };
+
+            checkInInput.addEventListener('change', checkAvailability);
+            checkOutInput.addEventListener('change', checkAvailability);
+            roomTypeInput.addEventListener('change', checkAvailability);
         });
 
         async function handleFormSubmit(e) {

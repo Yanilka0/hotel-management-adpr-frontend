@@ -101,7 +101,7 @@ const renderLayout = () => {
                 <li><a href="reservations.html" class="nav-link ${path === 'reservations.html' ? 'active' : ''}">Reservations</a></li>
                 ${isManager ? `<li><a href="register.html" class="nav-link ${path === 'register.html' ? 'active' : ''}">Staff Management</a></li>` : ''}
                 <li><a href="help.html" class="nav-link ${path === 'help.html' ? 'active' : ''}">Help</a></li>
-                ${isManager ? `<li><a href="#" class="nav-link">Settings</a></li>` : ''}
+                ${isManager ? `<li><a href="settings.html" class="nav-link ${path === 'settings.html' ? 'active' : ''}">Settings</a></li>` : ''}
             </ul>
         </nav>
     `;

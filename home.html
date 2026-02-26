@@ -21,6 +21,20 @@
             </p>
         </section>
 
+        <section class="bg-white p-6 mb-8 rounded-xl shadow-sm" style="border: 1px solid var(--border-color);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--text-dark);">Availability Today</h3>
+                <span id="availability-date"
+                    style="font-size: 0.875rem; color: var(--text-light); background-color: #f3f4f6; padding: 0.25rem 0.75rem; border-radius: 9999px;"></span>
+            </div>
+
+            <div id="availability-grid"
+                style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem;">
+                <p style="color: var(--text-light); font-size: 0.875rem; grid-column: 1 / -1;">Loading availability...
+                </p>
+            </div>
+        </section>
+
         <section class="grid md-grid-cols-2 gap-6" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
             <a href="create-booking.html" class="card-link">
                 <div class="card-icon">➕</div>
@@ -61,7 +75,74 @@
                 const reportsCard = document.getElementById('reports-card');
                 if (reportsCard) reportsCard.style.display = 'none';
             }
+
+            // Fetch availability for today
+            fetchTodayAvailability();
         });
+
+        async function fetchTodayAvailability() {
+            const today = new Date();
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+
+            const formatDate = (date) => date.toISOString().split('T')[0];
+            const checkIn = formatDate(today);
+            const checkOut = formatDate(tomorrow);
+
+            // Display formated date
+            document.getElementById('availability-date').textContent = today.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+
+            try {
+                const response = await fetch(`http://localhost:8081/api/availability?checkIn=${checkIn}&checkOut=${checkOut}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    renderAvailabilityGrid(data);
+                } else {
+                    throw new Error('Failed to fetch API');
+                }
+            } catch (error) {
+                console.error('Availability fetching error:', error);
+                document.getElementById('availability-grid').innerHTML = `
+                    <p style="color: #dc2626; font-size: 0.875rem; grid-column: 1 / -1;">
+                        Unable to load availability. Please try again later.
+                    </p>
+                `;
+            }
+        }
+
+        function renderAvailabilityGrid(data) {
+            const grid = document.getElementById('availability-grid');
+            grid.innerHTML = '';
+
+            const entries = Object.entries(data);
+            if (entries.length === 0) {
+                grid.innerHTML = `<p style="color: var(--text-light); font-size: 0.875rem; grid-column: 1 / -1;">No room configurations found. Contact your Manager.</p>`;
+                return;
+            }
+
+            entries.forEach(([roomType, availableCount]) => {
+                const isAvailable = availableCount > 0;
+
+                const card = document.createElement('div');
+                card.style.cssText = `
+                    border: 1px solid ${isAvailable ? '#e5e7eb' : '#fecaca'};
+                    background-color: ${isAvailable ? 'white' : '#fef2f2'};
+                    padding: 1rem;
+                    border-radius: 0.5rem;
+                    text-align: center;
+                `;
+
+                card.innerHTML = `
+                    <h4 style="font-weight: 600; color: ${isAvailable ? '#374151' : '#b91c1c'}; margin-bottom: 0.5rem;">${roomType}</h4>
+                    <span style="display: inline-block; padding: 0.25rem 0.5rem; background-color: ${isAvailable ? '#dcfce7' : '#fee2e2'}; color: ${isAvailable ? '#15803d' : '#991b1b'}; border-radius: 9999px; font-weight: 700; font-size: 1.25rem;">
+                        ${availableCount}
+                    </span>
+                    <p style="color: ${isAvailable ? '#6b7280' : '#b91c1c'}; font-size: 0.75rem; margin-top: 0.5rem;">Available</p>
+                `;
+
+                grid.appendChild(card);
+            });
+        }
     </script>
 </body>
 

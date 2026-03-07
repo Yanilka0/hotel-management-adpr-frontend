@@ -120,20 +120,21 @@
 
         function renderSettingsTable(settings) {
             const tbody = document.getElementById('settingsTableBody');
-
-            if (settings.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="3" style="padding: 1rem; text-align: center; color: #6b7280;">No explicit room configurations defined yet.</td></tr>`;
-                return;
-            }
+            const mainTypes = [
+                { id: 'Normal', name: 'Ordinary Room' },
+                { id: 'Semi Luxury', name: 'Semi Luxury' },
+                { id: 'Luxury', name: 'Luxury' }
+            ];
 
             tbody.innerHTML = '';
 
-            settings.forEach(setting => {
+            mainTypes.forEach(type => {
+                const setting = settings.find(s => s.roomType === type.id) || { roomType: type.id, totalRooms: 0 };
                 const tr = document.createElement('tr');
                 tr.style.borderBottom = '1px solid #e5e7eb';
 
                 tr.innerHTML = `
-                    <td style="padding: 0.75rem 1rem; color: #1f2937;">${setting.roomType}</td>
+                    <td style="padding: 0.75rem 1rem; color: #1f2937;">${type.name}</td>
                     <td style="padding: 0.75rem 1rem; color: #1f2937;">
                         <span style="display: inline-block; padding: 0.25rem 0.75rem; background-color: #dbeafe; color: #1e40af; border-radius: 9999px; font-size: 0.875rem; font-weight: 500;">
                             ${setting.totalRooms}

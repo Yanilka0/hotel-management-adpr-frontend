@@ -83,6 +83,12 @@
                         <h4 style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem;">❓ Help</h4>
                         <p style="font-size: 0.875rem;">Access this comprehensive help documentation anytime.</p>
                     </div>
+
+                    <div
+                        style="padding: 1rem; background-color: #f9fafb; border-radius: 0.5rem; border-left: 4px solid #8b5cf6;">
+                        <h4 style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem;">⚙️ Settings</h4>
+                        <p style="font-size: 0.875rem;">Configure global system parameters (Managers only).</p>
+                    </div>
                 </div>
             </div>
         </section>
@@ -201,6 +207,34 @@
                     <p style="font-weight: 600; color: #991b1b; margin-bottom: 0.5rem;">⚠️ Warning</p>
                     <p style="color: #7f1d1d; font-size: 0.875rem;">Deleting a reservation is permanent and cannot be
                         undone. Always verify with a supervisor before deleting active bookings.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- System Settings -->
+        <section class="bg-white p-6 mb-6 rounded-xl shadow-sm" style="border: 1px solid var(--border-color);">
+            <h2
+                style="font-size: 1.5rem; font-weight: 700; color: var(--primary); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                ⚙️ System Settings (Managers Only)
+            </h2>
+            <div style="color: var(--text-medium); line-height: 1.8;">
+                <p style="margin-bottom: 1rem;">The Settings page allows managers to configure global hotel parameters:</p>
+
+                <h3 style="font-weight: 600; color: var(--text-dark); margin-top: 1.5rem; margin-bottom: 0.75rem;">
+                    Room Availability Configuration</h3>
+                <ul style="margin-left: 1.5rem; margin-bottom: 1rem;">
+                    <li>Navigate to the <strong>Settings</strong> page from the navigation menu</li>
+                    <li>View the current total capacity for each room type (Ordinary Room, Semi Luxury, Luxury)</li>
+                    <li>To modify a capacity, click the <strong>"Edit"</strong> button next to the room type</li>
+                    <li>The selected room type and its current capacity will populate the input form</li>
+                    <li>Enter the new total rooms capacity and click <strong>"Update"</strong> (or "Save")</li>
+                    <li>A success message will confirm the changes have been saved</li>
+                </ul>
+
+                <div
+                    style="margin-top: 1.5rem; padding: 1rem; background-color: #f3f4f6; border-radius: 0.5rem; border-left: 4px solid #6b7280;">
+                    <p style="font-weight: 600; color: #374151; margin-bottom: 0.5rem;">ℹ️ Note</p>
+                    <p style="color: #4b5563; font-size: 0.875rem;">This page is restricted to users with the MANAGER role. Other staff members will not see the Settings link in the navigation menu.</p>
                 </div>
             </div>
         </section>
@@ -337,6 +371,10 @@
                     <div style="background-color: rgba(255, 255, 255, 0.1); padding: 1rem; border-radius: 0.5rem;">
                         <strong>Edit Booking</strong><br>
                         <span style="font-size: 0.875rem; opacity: 0.9;">Reservations → Edit Button</span>
+                    </div>
+                    <div style="background-color: rgba(255, 255, 255, 0.1); padding: 1rem; border-radius: 0.5rem;">
+                        <strong>System Settings</strong><br>
+                        <span style="font-size: 0.875rem; opacity: 0.9;">Navigation Menu → Settings</span>
                     </div>
                 </div>
             </div>
